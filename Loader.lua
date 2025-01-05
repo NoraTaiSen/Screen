@@ -163,11 +163,15 @@ local function updateStatsAndRace()
     local beli = LocalPlayer:WaitForChild("Data"):WaitForChild("Beli").Value
     local fragments = LocalPlayer:WaitForChild("Data"):WaitForChild("Fragments").Value
     local race = LocalPlayer:WaitForChild("Data"):WaitForChild("Race").Value
+    local jobID = game.JobId  -- Get the server JobId
 
     -- Update the stats and Race with emojis, using the formatNumber function
-    statsCheckLabel.Text = string.format("%s Level: %d \n| 💰 Beli: %s | 💎 Fragments: %s", 
+    statsCheckLabel.Text = string.format("%s Level: %d | 💰 Beli: %s | 💎 Fragments: %s", 
         EmojiLib:getEmoji("star"), level, formatNumber(beli), formatNumber(fragments))
     raceCheckLabel.Text = string.format("%s Race: %s", EmojiLib:getEmoji("rocket"), tostring(race))
+
+    -- Update jobID label with the server's job ID
+    jobIDLabel.Text = string.format("Job ID: %s", jobID)
 end
 
 spawn(function()
@@ -175,6 +179,7 @@ spawn(function()
         updateStatsAndRace()
     end
 end)
+
 
 -- FPS and time update loop
 getgenv().Fpscap = getgenv().Fpscap or 15  -- Nếu getgenv().Fpscap trống hoặc chưa được thiết lập, gán giá trị mặc định là 15

@@ -114,6 +114,34 @@ raceCheckLabel.TextScaled = true
 raceCheckLabel.BackgroundTransparency = 1
 raceCheckLabel.TextStrokeTransparency = 0
 raceCheckLabel.TextColor3 = Color3.fromRGB(0, 255, 0)  -- Set text color to white
+local playTimeLabel = Instance.new("TextLabel")
+playTimeLabel.Parent = screenGui
+playTimeLabel.Size = UDim2.new(0, 300, 0, 40)  -- Adjusted size for playtime label
+playTimeLabel.Position = UDim2.new(0.5, -150, 0, 330)  -- Positioned below Race check
+playTimeLabel.Font = Enum.Font.FredokaOne
+playTimeLabel.TextScaled = true
+playTimeLabel.BackgroundTransparency = 1
+playTimeLabel.TextStrokeTransparency = 0
+playTimeLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text color
+
+-- Function to calculate and update the playtime
+local function updatePlayTime()
+    local joinTime = LocalPlayer.AccountAge  -- AccountAge gives the number of days the player has been on Roblox
+    local currentTime = os.time()
+    local elapsedTime = currentTime - joinTime  -- Elapsed time since joining the server
+    local hours = math.floor(elapsedTime / 3600)
+    local minutes = math.floor((elapsedTime % 3600) / 60)
+    local seconds = elapsedTime % 60
+    -- Update the playtime label with the elapsed time
+    playTimeLabel.Text = string.format("⏳ Playtime: %02d:%02d:%02d", hours, minutes, seconds)
+end
+
+-- Update playtime every second
+spawn(function()
+    while wait(1) do  -- Update every second
+        updatePlayTime()
+    end
+end)
 
 -- Function to update Level, Beli, Fragments, and Race
 local function updateStatsAndRace()

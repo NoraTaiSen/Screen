@@ -6,7 +6,6 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
 local Teams = game:GetService("Teams")
-local str = tostring(game:GetService("RbxAnalyticsService"):GetClientId())
 
 -- Wait for the game to fully load and character to be added
 if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
@@ -92,7 +91,34 @@ moonCheckLabel.Font = Enum.Font.FredokaOne
 moonCheckLabel.TextScaled = true
 moonCheckLabel.BackgroundTransparency = 1
 moonCheckLabel.TextStrokeTransparency = 0
-moonCheckLabel.TextColor3 = Color3.fromRGB(0, 255, 255)  -- Set text color to white
+moonCheckLabel.TextColor3 = Color3.fromRGB(0, 255, 255)  -- Cyan color for better visibility
+local function updateMoonStatus()
+    local moonTextureId = game:GetService("Lighting").Sky.MoonTextureId
+    if moonTextureId == "http://www.roblox.com/asset/?id=9709149431" then
+        moonCheckLabel.Text = "Moon Status: 🌕 100%"
+    elseif moonTextureId == "http://www.roblox.com/asset/?id=9709149052" then
+        moonCheckLabel.Text = "Moon Status: 🌖 75%"
+    elseif moonTextureId == "http://www.roblox.com/asset/?id=9709143733" then
+        moonCheckLabel.Text = "Moon Status: 🌗 50%"
+    elseif moonTextureId == "http://www.roblox.com/asset/?id=9709150401" then
+        moonCheckLabel.Text = "Moon Status: 🌘 25%"
+    elseif moonTextureId == "http://www.roblox.com/asset/?id=9709149680" then
+        moonCheckLabel.Text = "Moon Status: 🌑 15%"
+    else
+        moonCheckLabel.Text = "Moon Status: 🌒 0%"
+    end
+end
+
+-- Continuously update the Moon Check label
+spawn(function()
+    while true do
+        local success, errorMessage = pcall(updateMoonStatus)
+        if not success then
+            warn("Failed to update moon status: " .. errorMessage)
+        end
+        wait(1)  -- Check every 1 second
+    end
+end)
 
 -- Level, Beli, Fragments, and Race check UI
 local statsCheckLabel = Instance.new("TextLabel")
@@ -103,7 +129,7 @@ statsCheckLabel.Font = Enum.Font.FredokaOne
 statsCheckLabel.TextScaled = true
 statsCheckLabel.BackgroundTransparency = 1
 statsCheckLabel.TextStrokeTransparency = 0
-statsCheckLabel.TextColor3 = Color3.fromRGB(255, 0, 0)  -- Set text color to white
+statsCheckLabel.TextColor3 = Color3.fromRGB(255, 0, 0)  -- Set text color to red
 
 -- Race check UI
 local raceCheckLabel = Instance.new("TextLabel")
@@ -114,20 +140,22 @@ raceCheckLabel.Font = Enum.Font.FredokaOne
 raceCheckLabel.TextScaled = true
 raceCheckLabel.BackgroundTransparency = 1
 raceCheckLabel.TextStrokeTransparency = 0
-raceCheckLabel.TextColor3 = Color3.fromRGB(0, 255, 0)  -- Set text color to white
+raceCheckLabel.TextColor3 = Color3.fromRGB(0, 255, 0)  -- Set text color to green
+
+-- Playtime label
+local joinTime = tick()
 
 local playTimeLabel = Instance.new("TextLabel")
 playTimeLabel.Parent = screenGui
-playTimeLabel.Size = UDim2.new(0, 300, 0, 40)  -- Adjusted size for playtime label
-playTimeLabel.Position = UDim2.new(0.5, -150, 0, 330)  -- Positioned below Race check
+playTimeLabel.Size = UDim2.new(0, 300, 0, 40)  -- Size of the playtime label
+playTimeLabel.Position = UDim2.new(0.5, -150, 0, 140)  -- Positioned at the top part of the UI
 playTimeLabel.Font = Enum.Font.FredokaOne
 playTimeLabel.TextScaled = true
 playTimeLabel.BackgroundTransparency = 1
 playTimeLabel.TextStrokeTransparency = 0
-playTimeLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text color
+playTimeLabel.TextColor3 = Color3.fromRGB(0, 255, 255)  -- Set text color to cyan
 
-
--- Hàm cập nhật thời gian chơi
+-- Hàm cập nhật Playtime
 local function updatePlayTime()
     local elapsedTime = tick() - joinTime  -- Tính thời gian trôi qua từ khi gia nhập server
     local hours = math.floor(elapsedTime / 3600)
@@ -137,12 +165,17 @@ local function updatePlayTime()
     playTimeLabel.Text = string.format("⏳ Playtime: %02d:%02d:%02d", hours, minutes, seconds)
 end
 
--- Cập nhật thời gian chơi mỗi giây
+-- Vòng lặp liên tục cập nhật thời gian chơi
 spawn(function()
-    while wait(1) do  -- Cập nhật mỗi giây
-        updatePlayTime()
+    while true do
+        local success, errorMessage = pcall(updatePlayTime)
+        if not success then
+            warn("Lỗi khi cập nhật thời gian chơi: " .. errorMessage)
+        end
+        wait(1)  -- Cập nhật mỗi giây
     end
 end)
+
 
 -- Function to update Level, Beli, Fragments, and Race
 local function formatNumber(number)
@@ -170,7 +203,7 @@ local function updateStatsAndRace()
 end
 
 spawn(function()
-    while wait(1) do  -- Update every 1 second
+    while wait(1) do  -- Check every 1 second
         updateStatsAndRace()
     end
 end)
@@ -215,30 +248,6 @@ while true do  -- Continuously update every second
     wait(1)  -- Wait for 1 second before updating again
 end
 
-local function updateMoonStatus()
-    local moonTextureId = game:GetService("Lighting").Sky.MoonTextureId
-    if moonTextureId == "http://www.roblox.com/asset/?id=9709149431" then
-        moonCheckLabel.Text = "Moon Status: 🌕 100%"
-    elseif moonTextureId == "http://www.roblox.com/asset/?id=9709149052" then
-        moonCheckLabel.Text = "Moon Status: 🌖 75%"
-    elseif moonTextureId == "http://www.roblox.com/asset/?id=9709143733" then
-        moonCheckLabel.Text = "Moon Status: 🌗 50%"
-    elseif moonTextureId == "http://www.roblox.com/asset/?id=9709150401" then
-        moonCheckLabel.Text = "Moon Status: 🌘 25%"
-    elseif moonTextureId == "http://www.roblox.com/asset/?id=9709149680" then
-        moonCheckLabel.Text = "Moon Status: 🌑 15%"
-    else
-        moonCheckLabel.Text = "Moon Status: 🌒 0%"
-    end
-end
-
--- Update moon status in a loop
-spawn(function()
-    while wait(1) do  -- Check every 1 second
-        updateMoonStatus()
-    end
-end)
-
 -- Update the level in a loop
 spawn(function()
     while wait(1) do  -- Check every 1 second
@@ -246,21 +255,6 @@ spawn(function()
     end
 end)
 
-local function updateFrameColor()
-    -- Ensure the variable name is correctly referenced and check for its value
-    if getgenv().Farme == "transparent" then
-        Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-        Frame.BackgroundTransparency = 0.5  -- Semi-transparent black
-    elseif getgenv().Farme == "black" then
-        Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-        Frame.BackgroundTransparency = 1  -- Fully opaque
-    else
-        -- Default case if no valid value
-        Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-        Frame.BackgroundTransparency = 1  -- Fully opaque
-    end
-end
-updateFrameColor()
 local toggleButton = Instance.new("TextButton")
 toggleButton.Parent = screenGui
 toggleButton.Size = UDim2.new(0, 50, 0, 50)  -- Set the size to 50x50 for a small round button
@@ -284,11 +278,30 @@ logo.Image = "rbxassetid://18675335801"  -- Set the logo image
 -- Initialize visibility state
 local isVisible = true
 
+-- Function to update Frame color based on the global value
+local function updateFrameColor()
+    -- Ensure the variable name is correctly referenced and check for its value
+    if getgenv().Farme == "transparent" then
+        Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        Frame.BackgroundTransparency = 0.5  -- Semi-transparent black
+    elseif getgenv().Farme == "black" then
+        Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        Frame.BackgroundTransparency = 1  -- Fully opaque
+    else
+        -- Default case if no valid value
+        Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        Frame.BackgroundTransparency = 1  -- Fully opaque
+    end
+end
+
+-- Call the function to update frame color
+updateFrameColor()
+
 -- Toggle visibility when the button is clicked
 toggleButton.MouseButton1Click:Connect(function()
     isVisible = not isVisible  -- Toggle visibility
     screenGui.Enabled = isVisible  -- Show/hide the ScreenGui (FPS and time display)
-    ScreenGui.Enabled = isVisible  -- Show/hide the background ScreenGui
-end)
 
--- Ensure the toggle button itself is not hidden
+    -- Ensure the toggle button itself is not hidden
+    toggleButton.Visible = true
+end)

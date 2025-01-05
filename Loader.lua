@@ -165,7 +165,7 @@ local function updateStatsAndRace()
     local race = LocalPlayer:WaitForChild("Data"):WaitForChild("Race").Value
 
     -- Update the stats and Race with emojis, using the formatNumber function
-    statsCheckLabel.Text = string.format("%s Level: %d | 💰 Beli: %s | 💎 Fragments: %s", 
+    statsCheckLabel.Text = string.format("%s Level: %d \n| 💰 Beli: %s | 💎 Fragments: %s", 
         EmojiLib:getEmoji("star"), level, formatNumber(beli), formatNumber(fragments))
     raceCheckLabel.Text = string.format("%s Race: %s", EmojiLib:getEmoji("rocket"), tostring(race))
 end

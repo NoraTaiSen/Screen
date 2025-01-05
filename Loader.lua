@@ -114,6 +114,7 @@ raceCheckLabel.TextScaled = true
 raceCheckLabel.BackgroundTransparency = 1
 raceCheckLabel.TextStrokeTransparency = 0
 raceCheckLabel.TextColor3 = Color3.fromRGB(0, 255, 0)  -- Set text color to white
+
 local playTimeLabel = Instance.new("TextLabel")
 playTimeLabel.Parent = screenGui
 playTimeLabel.Size = UDim2.new(0, 300, 0, 40)  -- Adjusted size for playtime label
@@ -124,36 +125,51 @@ playTimeLabel.BackgroundTransparency = 1
 playTimeLabel.TextStrokeTransparency = 0
 playTimeLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text color
 
--- Function to calculate and update the playtime
+-- Lưu thời gian khi người chơi gia nhập server
+local joinTime = tick()
+
+-- Hàm cập nhật thời gian chơi
 local function updatePlayTime()
-    local joinTime = LocalPlayer.AccountAge  -- AccountAge gives the number of days the player has been on Roblox
-    local currentTime = os.time()
-    local elapsedTime = currentTime - joinTime  -- Elapsed time since joining the server
+    local elapsedTime = tick() - joinTime  -- Tính thời gian trôi qua từ khi gia nhập server
     local hours = math.floor(elapsedTime / 3600)
     local minutes = math.floor((elapsedTime % 3600) / 60)
-    local seconds = elapsedTime % 60
-    -- Update the playtime label with the elapsed time
+    local seconds = math.floor(elapsedTime % 60)
+    -- Cập nhật nhãn playtime với thời gian đã trôi qua
     playTimeLabel.Text = string.format("⏳ Playtime: %02d:%02d:%02d", hours, minutes, seconds)
 end
 
--- Update playtime every second
+-- Cập nhật thời gian chơi mỗi giây
 spawn(function()
-    while wait(1) do  -- Update every second
+    while wait(1) do  -- Cập nhật mỗi giây
         updatePlayTime()
     end
 end)
 
 -- Function to update Level, Beli, Fragments, and Race
+local function formatNumber(number)
+    if number >= 1_000_000_000 then
+        return string.format("%.1fB", number / 1_000_000_000)  -- Billion
+    elseif number >= 1_000_000 then
+        return string.format("%.1fM", number / 1_000_000)  -- Million
+    elseif number >= 1_000 then
+        return string.format("%.1fK", number / 1_000)  -- Thousand
+    else
+        return tostring(number)  -- Nếu nhỏ hơn 1000 thì không thay đổi
+    end
+end
+
 local function updateStatsAndRace()
     local level = LocalPlayer:WaitForChild("Data"):WaitForChild("Level").Value
     local beli = LocalPlayer:WaitForChild("Data"):WaitForChild("Beli").Value
     local fragments = LocalPlayer:WaitForChild("Data"):WaitForChild("Fragments").Value
     local race = LocalPlayer:WaitForChild("Data"):WaitForChild("Race").Value
 
-    -- Update the stats and Race with emojis
-    statsCheckLabel.Text = string.format("%s Level: %d | 💰 Beli: %d | 💎 Fragments: %d", EmojiLib:getEmoji("star"), level, beli, fragments)
+    -- Update the stats and Race with emojis, using the formatNumber function
+    statsCheckLabel.Text = string.format("%s Level: %d | 💰 Beli: %s | 💎 Fragments: %s", 
+        EmojiLib:getEmoji("star"), level, formatNumber(beli), formatNumber(fragments))
     raceCheckLabel.Text = string.format("%s Race: %s", EmojiLib:getEmoji("rocket"), tostring(race))
 end
+
 spawn(function()
     while wait(1) do  -- Update every 1 second
         updateStatsAndRace()

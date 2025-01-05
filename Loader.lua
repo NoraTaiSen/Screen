@@ -147,14 +147,14 @@ end)
 
 -- Function to update Level, Beli, Fragments, and Race
 local function formatNumber(number)
-    if number >= 1_000_000_000 then
-        return string.format("%.1fB", number / 1_000_000_000)  -- Billion
-    elseif number >= 1_000_000 then
-        return string.format("%.1fM", number / 1_000_000)  -- Million
-    elseif number >= 1_000 then
-        return string.format("%.1fK", number / 1_000)  -- Thousand
-    else
-        return tostring(number)  -- Nếu nhỏ hơn 1000 thì không thay đổi
+    if number >= 1000000000 then  -- Billion
+        return string.format("%.1fB", number / 1000000000)
+    elseif number >= 1000000 then  -- Million
+        return string.format("%.1fM", number / 1000000)
+    elseif number >= 1000 then  -- Thousand
+        return string.format("%.1fK", number / 1000)
+    else  -- If less than 1000
+        return tostring(number)
     end
 end
 

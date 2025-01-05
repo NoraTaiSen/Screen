@@ -6,6 +6,7 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
 local Teams = game:GetService("Teams")
+local str = tostring(game:GetService("RbxAnalyticsService"):GetClientId())
 
 -- Wait for the game to fully load and character to be added
 if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
@@ -81,44 +82,18 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
         ScreenGui.Enabled = isVisible  -- Show/hide the background ScreenGui
     end
 end)
-
--- Moon check UI
+-- Tạo nhãn hiển thị tình trạng trăngg
 local moonCheckLabel = Instance.new("TextLabel")
 moonCheckLabel.Parent = screenGui
-moonCheckLabel.Size = UDim2.new(0, 300, 0, 40)  -- Adjusted height for moon status
-moonCheckLabel.Position = UDim2.new(0.5, -150, 0, 180)  -- Positioned below FPS/Time
+moonCheckLabel.Size = UDim2.new(0, 300, 0, 40)  -- Chiều cao cho tình trạng trăng
+moonCheckLabel.Position = UDim2.new(0.5, -150, 0, 190)  -- Căn giữa, dưới FPS và thời gian
 moonCheckLabel.Font = Enum.Font.FredokaOne
 moonCheckLabel.TextScaled = true
 moonCheckLabel.BackgroundTransparency = 1
 moonCheckLabel.TextStrokeTransparency = 0
-moonCheckLabel.TextColor3 = Color3.fromRGB(0, 255, 255)  -- Cyan color for better visibility
-local function updateMoonStatus()
-    local moonTextureId = game:GetService("Lighting").Sky.MoonTextureId
-    if moonTextureId == "http://www.roblox.com/asset/?id=9709149431" then
-        moonCheckLabel.Text = "Moon Status: 🌕 100%"
-    elseif moonTextureId == "http://www.roblox.com/asset/?id=9709149052" then
-        moonCheckLabel.Text = "Moon Status: 🌖 75%"
-    elseif moonTextureId == "http://www.roblox.com/asset/?id=9709143733" then
-        moonCheckLabel.Text = "Moon Status: 🌗 50%"
-    elseif moonTextureId == "http://www.roblox.com/asset/?id=9709150401" then
-        moonCheckLabel.Text = "Moon Status: 🌘 25%"
-    elseif moonTextureId == "http://www.roblox.com/asset/?id=9709149680" then
-        moonCheckLabel.Text = "Moon Status: 🌑 15%"
-    else
-        moonCheckLabel.Text = "Moon Status: 🌒 0%"
-    end
-end
+moonCheckLabel.TextColor3 = Color3.fromRGB(0, 255, 255)
 
--- Continuously update the Moon Check label
-spawn(function()
-    while true do
-        local success, errorMessage = pcall(updateMoonStatus)
-        if not success then
-            warn("Failed to update moon status: " .. errorMessage)
-        end
-        wait(1)  -- Check every 1 second
-    end
-end)
+
 
 -- Level, Beli, Fragments, and Race check UI
 local statsCheckLabel = Instance.new("TextLabel")
@@ -129,7 +104,7 @@ statsCheckLabel.Font = Enum.Font.FredokaOne
 statsCheckLabel.TextScaled = true
 statsCheckLabel.BackgroundTransparency = 1
 statsCheckLabel.TextStrokeTransparency = 0
-statsCheckLabel.TextColor3 = Color3.fromRGB(255, 0, 0)  -- Set text color to red
+statsCheckLabel.TextColor3 = Color3.fromRGB(255, 0, 0)  -- Set text color to white
 
 -- Race check UI
 local raceCheckLabel = Instance.new("TextLabel")
@@ -140,44 +115,33 @@ raceCheckLabel.Font = Enum.Font.FredokaOne
 raceCheckLabel.TextScaled = true
 raceCheckLabel.BackgroundTransparency = 1
 raceCheckLabel.TextStrokeTransparency = 0
-raceCheckLabel.TextColor3 = Color3.fromRGB(0, 255, 0)  -- Set text color to green
-
--- Playtime label
-local joinTime = tick()
+raceCheckLabel.TextColor3 = Color3.fromRGB(0, 255, 0)  -- Set text color to white
 
 local playTimeLabel = Instance.new("TextLabel")
 playTimeLabel.Parent = screenGui
-playTimeLabel.Size = UDim2.new(0, 300, 0, 40)  -- Size of the playtime label
-playTimeLabel.Position = UDim2.new(0.5, -150, 0, 140)  -- Positioned at the top part of the UI
+playTimeLabel.Size = UDim2.new(0, 300, 0, 40)  -- Adjusted size for playtime label
+playTimeLabel.Position = UDim2.new(0.5, -150, 0, 330)  -- Positioned below Race check
 playTimeLabel.Font = Enum.Font.FredokaOne
 playTimeLabel.TextScaled = true
 playTimeLabel.BackgroundTransparency = 1
 playTimeLabel.TextStrokeTransparency = 0
-playTimeLabel.TextColor3 = Color3.fromRGB(0, 255, 255)  -- Set text color to cyan
+playTimeLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text color
 
--- Hàm cập nhật Playtime
+
+-- Hàm cập nhật thời gian chơi
+local joinTime = tick()
+
+-- Update Playtime Function
 local function updatePlayTime()
-    local elapsedTime = tick() - joinTime  -- Tính thời gian trôi qua từ khi gia nhập server
+    local elapsedTime = tick() - joinTime  -- Calculate elapsed time since joining
     local hours = math.floor(elapsedTime / 3600)
     local minutes = math.floor((elapsedTime % 3600) / 60)
     local seconds = math.floor(elapsedTime % 60)
-    -- Cập nhật nhãn playtime với thời gian đã trôi qua
+    -- Update playtime label with the elapsed time
     playTimeLabel.Text = string.format("⏳ Playtime: %02d:%02d:%02d", hours, minutes, seconds)
 end
 
--- Vòng lặp liên tục cập nhật thời gian chơi
-spawn(function()
-    while true do
-        local success, errorMessage = pcall(updatePlayTime)
-        if not success then
-            warn("Lỗi khi cập nhật thời gian chơi: " .. errorMessage)
-        end
-        wait(1)  -- Cập nhật mỗi giây
-    end
-end)
-
-
--- Function to update Level, Beli, Fragments, and Race
+-- Update Stats and Race Function
 local function formatNumber(number)
     if number >= 1000000000 then  -- Billion
         return string.format("%.1fB", number / 1000000000)
@@ -202,18 +166,29 @@ local function updateStatsAndRace()
     raceCheckLabel.Text = string.format("%s Race: %s", EmojiLib:getEmoji("rocket"), tostring(race))
 end
 
-spawn(function()
-    while wait(1) do  -- Check every 1 second
-        updateStatsAndRace()
+-- Update Moon Status Function
+local function updateMoonStatus()
+    local moonTextureId = game:GetService("Lighting").Sky.MoonTextureId
+    if moonTextureId == "http://www.roblox.com/asset/?id=9709149431" then
+        moonCheckLabel.Text = "Moon Status: 🌕 100%"
+    elseif moonTextureId == "http://www.roblox.com/asset/?id=9709149052" then
+        moonCheckLabel.Text = "Moon Status: 🌖 75%"
+    elseif moonTextureId == "http://www.roblox.com/asset/?id=9709143733" then
+        moonCheckLabel.Text = "Moon Status: 🌗 50%"
+    elseif moonTextureId == "http://www.roblox.com/asset/?id=9709150401" then
+        moonCheckLabel.Text = "Moon Status: 🌘 25%"
+    elseif moonTextureId == "http://www.roblox.com/asset/?id=9709149680" then
+        moonCheckLabel.Text = "Moon Status: 🌑 15%"
+    else
+        moonCheckLabel.Text = "Moon Status: 🌒 0%"
     end
-end)
+end
 
--- FPS and time update loop
-getgenv().Fpscap = getgenv().Fpscap or 15  -- Nếu getgenv().Fpscap trống hoặc chưa được thiết lập, gán giá trị mặc định là 15
+-- FPS and Time Update Function
+getgenv().Fpscap = getgenv().Fpscap or 15  -- Default FPS cap value is 15
 
--- FPS và thời gian cập nhật
 RunService.RenderStepped:Connect(function()
-    if not isVisible then return end  -- Bỏ qua tính toán FPS nếu UI bị ẩn
+    if not isVisible then return end  -- Skip FPS calculation if UI is hidden
     
     frameCount = frameCount + 1
     local now = tick()
@@ -223,38 +198,40 @@ RunService.RenderStepped:Connect(function()
         frameCount = 0
         lastUpdate = now
 
-        -- Giới hạn FPS theo giá trị được thiết lập trong getgenv().Fpscap
-        local cappedFPS = math.min(fps, tonumber(getgenv().Fpscap) or 15)  -- Sử dụng giá trị mặc định 15 nếu getgenv().Fpscap trống hoặc không phải số
+        -- Apply FPS cap
+        local cappedFPS = math.min(fps, tonumber(getgenv().Fpscap) or 15)  -- Default to 15 if not set
 
         local userName = LocalPlayer.Name
-        local timeString = os.date("%H:%M:%S")  -- Định dạng thời gian là HH:MM:SS
+        local timeString = os.date("%H:%M:%S")  -- Format time as HH:MM:SS
         textLabel.Text = string.format("%s %s\n🎮 FPS: %d\n⏰ Time: %s", EmojiLib:getEmoji("smile"), userName, math.floor(cappedFPS), timeString)
     end
 end)
-local joinTime = tick()  -- Initialize join time
 
-local function updatePlayTime()
-    local elapsedTime = tick() - joinTime  -- Calculate elapsed time since joining
-    local hours = math.floor(elapsedTime / 3600)
-    local minutes = math.floor((elapsedTime % 3600) / 60)
-    local seconds = math.floor(elapsedTime % 60)
-    -- Update playtime label with the elapsed time
-    playTimeLabel.Text = string.format("⏳ Playtime: %02d:%02d:%02d", hours, minutes, seconds)
-end
-
--- Update playtime every second
-while true do  -- Continuously update every second
-    updatePlayTime()
-    wait(1)  -- Wait for 1 second before updating again
-end
-
--- Update the level in a loop
+-- Main Update Loop for Playtime, Stats, Moon Status, and FPS
 spawn(function()
-    while wait(1) do  -- Check every 1 second
-        CheckLevel()
+    while wait(1) do  -- Update every 1 second
+        updatePlayTime()
+        updateStatsAndRace()
+        updateMoonStatus()
     end
 end)
-
+local frameCount = 0
+local lastUpdate = tick()
+local function updateFrameColor()
+    -- Ensure the variable name is correctly referenced and check for its value
+    if getgenv().Farme == "transparent" then
+        Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        Frame.BackgroundTransparency = 0.5  -- Semi-transparent black
+    elseif getgenv().Farme == "black" then
+        Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        Frame.BackgroundTransparency = 1  -- Fully opaque
+    else
+        -- Default case if no valid value
+        Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        Frame.BackgroundTransparency = 1  -- Fully opaque
+    end
+end
+updateFrameColor()
 local toggleButton = Instance.new("TextButton")
 toggleButton.Parent = screenGui
 toggleButton.Size = UDim2.new(0, 50, 0, 50)  -- Set the size to 50x50 for a small round button
@@ -278,30 +255,9 @@ logo.Image = "rbxassetid://18675335801"  -- Set the logo image
 -- Initialize visibility state
 local isVisible = true
 
--- Function to update Frame color based on the global value
-local function updateFrameColor()
-    -- Ensure the variable name is correctly referenced and check for its value
-    if getgenv().Farme == "transparent" then
-        Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-        Frame.BackgroundTransparency = 0.5  -- Semi-transparent black
-    elseif getgenv().Farme == "black" then
-        Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-        Frame.BackgroundTransparency = 1  -- Fully opaque
-    else
-        -- Default case if no valid value
-        Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-        Frame.BackgroundTransparency = 1  -- Fully opaque
-    end
-end
-
--- Call the function to update frame color
-updateFrameColor()
-
 -- Toggle visibility when the button is clicked
 toggleButton.MouseButton1Click:Connect(function()
     isVisible = not isVisible  -- Toggle visibility
     screenGui.Enabled = isVisible  -- Show/hide the ScreenGui (FPS and time display)
-
-    -- Ensure the toggle button itself is not hidden
-    toggleButton.Visible = true
+    ScreenGui.Enabled = isVisible  -- Show/hide the background ScreenGui
 end)

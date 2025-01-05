@@ -164,14 +164,21 @@ local function updateStatsAndRace()
     local fragments = LocalPlayer:WaitForChild("Data"):WaitForChild("Fragments").Value
     local race = LocalPlayer:WaitForChild("Data"):WaitForChild("Race").Value
     local jobID = game.JobId  -- Get the server JobId
+    local teleportScript = string.format('game:GetService("ReplicatedStorage").__ServerBrowser:InvokeServer("teleport", "%s")', jobID)
 
     -- Update the stats and Race with emojis, using the formatNumber function
     statsCheckLabel.Text = string.format("%s Level: %d | 💰 Beli: %s | 💎 Fragments: %s", 
         EmojiLib:getEmoji("star"), level, formatNumber(beli), formatNumber(fragments))
     raceCheckLabel.Text = string.format("%s Race: %s", EmojiLib:getEmoji("rocket"), tostring(race))
 
-    -- Update jobID label with the server's job ID
-    jobIDLabel.Text = string.format("Job ID: %s", jobID)
+    -- Update the label with the teleportation script
+    teleportScriptLabel.Text = teleportScript  -- This will display the script on the label
+end
+
+-- Function to copy the script to the clipboard
+local function copyScriptToClipboard()
+    local teleportScript = teleportScriptLabel.Text  -- Get the text from the label
+    setclipboard(teleportScript)  -- Copy it to the clipboard (Roblox built-in function)
 end
 
 spawn(function()
@@ -179,6 +186,12 @@ spawn(function()
         updateStatsAndRace()
     end
 end)
+
+-- Event when the script label is clicked to copy the script
+teleportScriptLabel.MouseButton1Click:Connect(function()
+    copyScriptToClipboard()  -- Copy the script to clipboard when the label is clicked
+end)
+
 
 
 -- FPS and time update loop

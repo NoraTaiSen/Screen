@@ -6,6 +6,7 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
 local Teams = game:GetService("Teams")
+local str = tostring(game:GetService("RbxAnalyticsService"):GetClientId())
 
 -- Wait for the game to fully load and character to be added
 if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
@@ -133,35 +134,25 @@ jobIdLabel.Font = Enum.Font.FredokaOne
 jobIdLabel.TextScaled = true
 jobIdLabel.BackgroundTransparency = 1
 jobIdLabel.TextStrokeTransparency = 0
-jobIdLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text color
+jobIdLabel.TextColor3 = Color3.fromRGB(50, 255, 249)  -- White text color
 jobIdLabel.Text = "🆔 JobID: " .. game.JobId  -- Display the jobId
 
--- Add click-to-copy functionality
-jobIdLabel.MouseButton1Click:Connect(function()
-    setclipboard(game.JobId)  -- Copy the jobId to clipboard
-    print("JobID copied: " .. game.JobId)  -- Optional: Print to the console for feedback
-end)
-local jobIDLabel = Instance.new("TextLabel")
-jobIDLabel.Parent = screenGui
-jobIDLabel.Size = UDim2.new(0, 400, 0, 50)  -- Adjusted size for JobID label
-jobIDLabel.Position = UDim2.new(0.5, -200, 0, 450)  -- Positioned below Race/Stats
-jobIDLabel.Font = Enum.Font.FredokaOne
-jobIDLabel.TextScaled = true
-jobIDLabel.BackgroundTransparency = 1
-jobIDLabel.TextStrokeTransparency = 0
-jobIDLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text color
-jobIDLabel.Text = "Click to Copy Teleport Command"  -- Default label text
+local hwidLabel = Instance.new("TextLabel")
+hwidLabel.Parent = screenGui
+hwidLabel.Size = UDim2.new(0, 300, 0, 40)  -- Size for the hwid label
+hwidLabel.Position = UDim2.new(0.5, -150, 0, 430)  -- Adjusted position to appear below the JobID label
+hwidLabel.Font = Enum.Font.FredokaOne
+hwidLabel.TextScaled = true
+hwidLabel.BackgroundTransparency = 1
+hwidLabel.TextStrokeTransparency = 0
+hwidLabel.TextColor3 = Color3.fromRGB(50, 255, 249)  -- White text color
 
--- Hàm sao chép lệnh teleport khi nhấn vào Label
-jobIDLabel.MouseButton1Click:Connect(function()
-    local jobID = game:GetService("ReplicatedStorage"):WaitForChild("__ServerBrowser"):InvokeServer("teleport")  -- Lấy jobID từ ServerBrowser
-    local command = 'game:GetService("ReplicatedStorage").__ServerBrowser:InvokeServer("teleport", "' .. jobID .. '")'  -- Tạo dòng mã
-    setclipboard(command)  -- Sao chép dòng mã vào clipboard
-    print("Copied command: " .. command)  -- In ra console để kiểm tra
-end)
 
--- Lưu thời gian khi người chơi gia nhập server
-local joinTime = tick()
+hwidLabel.Text = "🆔 HardwareID: " .. str  -- Display the HardwareID
+local str = tostring(game:GetService("RbxAnalyticsService"):GetClientId())
+-- Example of how you could format the string (removing or replacing dashes, for example)
+str = str:gsub("%-%-", "")  -- This will remove any double dashes. You can customize this part.
+
 
 -- Hàm cập nhật thời gian chơi
 local function updatePlayTime()
@@ -200,7 +191,7 @@ local function updateStatsAndRace()
     local race = LocalPlayer:WaitForChild("Data"):WaitForChild("Race").Value
 
     -- Update the stats and Race with emojis, using the formatNumber function
-    statsCheckLabel.Text = string.format("%s Level: %d \n| 💰 Beli: %s | 💎 Fragments: %s", 
+    statsCheckLabel.Text = string.format("%s Level: %d \n| 💰 Beli: %s | 💎 Fragments: %s|", 
         EmojiLib:getEmoji("star"), level, formatNumber(beli), formatNumber(fragments))
     raceCheckLabel.Text = string.format("%s Race: %s", EmojiLib:getEmoji("rocket"), tostring(race))
 end
@@ -234,7 +225,22 @@ RunService.RenderStepped:Connect(function()
         textLabel.Text = string.format("%s %s\n🎮 FPS: %d\n⏰ Time: %s", EmojiLib:getEmoji("smile"), userName, math.floor(cappedFPS), timeString)
     end
 end)
+local joinTime = tick()  -- Initialize join time
 
+local function updatePlayTime()
+    local elapsedTime = tick() - joinTime  -- Calculate elapsed time since joining
+    local hours = math.floor(elapsedTime / 3600)
+    local minutes = math.floor((elapsedTime % 3600) / 60)
+    local seconds = math.floor(elapsedTime % 60)
+    -- Update playtime label with the elapsed time
+    playTimeLabel.Text = string.format("⏳ Playtime: %02d:%02d:%02d", hours, minutes, seconds)
+end
+
+-- Update playtime every second
+while true do  -- Continuously update every second
+    updatePlayTime()
+    wait(1)  -- Wait for 1 second before updating again
+end
 -- Moon check function
 local function updateMoonStatus()
     local moonTextureId = game:GetService("Lighting").Sky.MoonTextureId

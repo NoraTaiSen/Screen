@@ -125,6 +125,41 @@ playTimeLabel.BackgroundTransparency = 1
 playTimeLabel.TextStrokeTransparency = 0
 playTimeLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text color
 
+local jobIdLabel = Instance.new("TextLabel")
+jobIdLabel.Parent = screenGui
+jobIdLabel.Size = UDim2.new(0, 300, 0, 40)  -- Size for the jobId label
+jobIdLabel.Position = UDim2.new(0.5, -150, 0, 380)  -- Position below Playtime label
+jobIdLabel.Font = Enum.Font.FredokaOne
+jobIdLabel.TextScaled = true
+jobIdLabel.BackgroundTransparency = 1
+jobIdLabel.TextStrokeTransparency = 0
+jobIdLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text color
+jobIdLabel.Text = "🆔 JobID: " .. game.JobId  -- Display the jobId
+
+-- Add click-to-copy functionality
+jobIdLabel.MouseButton1Click:Connect(function()
+    setclipboard(game.JobId)  -- Copy the jobId to clipboard
+    print("JobID copied: " .. game.JobId)  -- Optional: Print to the console for feedback
+end)
+local jobIDLabel = Instance.new("TextLabel")
+jobIDLabel.Parent = screenGui
+jobIDLabel.Size = UDim2.new(0, 400, 0, 50)  -- Adjusted size for JobID label
+jobIDLabel.Position = UDim2.new(0.5, -200, 0, 450)  -- Positioned below Race/Stats
+jobIDLabel.Font = Enum.Font.FredokaOne
+jobIDLabel.TextScaled = true
+jobIDLabel.BackgroundTransparency = 1
+jobIDLabel.TextStrokeTransparency = 0
+jobIDLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text color
+jobIDLabel.Text = "Click to Copy Teleport Command"  -- Default label text
+
+-- Hàm sao chép lệnh teleport khi nhấn vào Label
+jobIDLabel.MouseButton1Click:Connect(function()
+    local jobID = game:GetService("ReplicatedStorage"):WaitForChild("__ServerBrowser"):InvokeServer("teleport")  -- Lấy jobID từ ServerBrowser
+    local command = 'game:GetService("ReplicatedStorage").__ServerBrowser:InvokeServer("teleport", "' .. jobID .. '")'  -- Tạo dòng mã
+    setclipboard(command)  -- Sao chép dòng mã vào clipboard
+    print("Copied command: " .. command)  -- In ra console để kiểm tra
+end)
+
 -- Lưu thời gian khi người chơi gia nhập server
 local joinTime = tick()
 
@@ -163,22 +198,11 @@ local function updateStatsAndRace()
     local beli = LocalPlayer:WaitForChild("Data"):WaitForChild("Beli").Value
     local fragments = LocalPlayer:WaitForChild("Data"):WaitForChild("Fragments").Value
     local race = LocalPlayer:WaitForChild("Data"):WaitForChild("Race").Value
-    local jobID = game.JobId  -- Get the server JobId
-    local teleportScript = string.format('game:GetService("ReplicatedStorage").__ServerBrowser:InvokeServer("teleport", "%s")', jobID)
 
     -- Update the stats and Race with emojis, using the formatNumber function
-    statsCheckLabel.Text = string.format("%s Level: %d | 💰 Beli: %s | 💎 Fragments: %s", 
+    statsCheckLabel.Text = string.format("%s Level: %d \n| 💰 Beli: %s | 💎 Fragments: %s", 
         EmojiLib:getEmoji("star"), level, formatNumber(beli), formatNumber(fragments))
     raceCheckLabel.Text = string.format("%s Race: %s", EmojiLib:getEmoji("rocket"), tostring(race))
-
-    -- Update the label with the teleportation script
-    teleportScriptLabel.Text = teleportScript  -- This will display the script on the label
-end
-
--- Function to copy the script to the clipboard
-local function copyScriptToClipboard()
-    local teleportScript = teleportScriptLabel.Text  -- Get the text from the label
-    setclipboard(teleportScript)  -- Copy it to the clipboard (Roblox built-in function)
 end
 
 spawn(function()
@@ -186,13 +210,6 @@ spawn(function()
         updateStatsAndRace()
     end
 end)
-
--- Event when the script label is clicked to copy the script
-teleportScriptLabel.MouseButton1Click:Connect(function()
-    copyScriptToClipboard()  -- Copy the script to clipboard when the label is clicked
-end)
-
-
 
 -- FPS and time update loop
 getgenv().Fpscap = getgenv().Fpscap or 15  -- Nếu getgenv().Fpscap trống hoặc chưa được thiết lập, gán giá trị mặc định là 15

@@ -126,33 +126,6 @@ playTimeLabel.BackgroundTransparency = 1
 playTimeLabel.TextStrokeTransparency = 0
 playTimeLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text color
 
-local jobIdLabel = Instance.new("TextLabel")
-jobIdLabel.Parent = screenGui
-jobIdLabel.Size = UDim2.new(0, 300, 0, 40)  -- Size for the jobId label
-jobIdLabel.Position = UDim2.new(0.5, -150, 0, 380)  -- Position below Playtime label
-jobIdLabel.Font = Enum.Font.FredokaOne
-jobIdLabel.TextScaled = true
-jobIdLabel.BackgroundTransparency = 1
-jobIdLabel.TextStrokeTransparency = 0
-jobIdLabel.TextColor3 = Color3.fromRGB(50, 255, 249)  -- White text color
-jobIdLabel.Text = "🆔 JobID: " .. game.JobId  -- Display the jobId
-
-local hwidLabel = Instance.new("TextLabel")
-hwidLabel.Parent = screenGui
-hwidLabel.Size = UDim2.new(0, 300, 0, 40)  -- Size for the hwid label
-hwidLabel.Position = UDim2.new(0.5, -150, 0, 430)  -- Adjusted position to appear below the JobID label
-hwidLabel.Font = Enum.Font.FredokaOne
-hwidLabel.TextScaled = true
-hwidLabel.BackgroundTransparency = 1
-hwidLabel.TextStrokeTransparency = 0
-hwidLabel.TextColor3 = Color3.fromRGB(50, 255, 249)  -- White text color
-
-
-hwidLabel.Text = "🆔 HardwareID: " .. str  -- Display the HardwareID
-local str = tostring(game:GetService("RbxAnalyticsService"):GetClientId())
--- Example of how you could format the string (removing or replacing dashes, for example)
-str = str:gsub("%-%-", "")  -- This will remove any double dashes. You can customize this part.
-
 
 -- Hàm cập nhật thời gian chơi
 local function updatePlayTime()
@@ -241,7 +214,7 @@ while true do  -- Continuously update every second
     updatePlayTime()
     wait(1)  -- Wait for 1 second before updating again
 end
--- Moon check function
+
 local function updateMoonStatus()
     local moonTextureId = game:GetService("Lighting").Sky.MoonTextureId
     if moonTextureId == "http://www.roblox.com/asset/?id=9709149431" then
@@ -273,22 +246,20 @@ spawn(function()
     end
 end)
 
--- Set the global variable for the frame color
-
--- Function to update the Frame color based on getgenv().Farme value
 local function updateFrameColor()
+    -- Ensure the variable name is correctly referenced and check for its value
     if getgenv().Farme == "transparent" then
         Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-        Frame.BackgroundTransparency = 0.5  -- Màu đen với độ trong suốt (mờ)
+        Frame.BackgroundTransparency = 0.5  -- Semi-transparent black
     elseif getgenv().Farme == "black" then
         Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        Frame.BackgroundTransparency = 1  -- Fully opaque
     else
-        -- Default color nếu không có giá trị phù hợp
+        -- Default case if no valid value
         Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-        Frame.BackgroundTransparency = 1
+        Frame.BackgroundTransparency = 1  -- Fully opaque
     end
 end
-
 updateFrameColor()
 local toggleButton = Instance.new("TextButton")
 toggleButton.Parent = screenGui

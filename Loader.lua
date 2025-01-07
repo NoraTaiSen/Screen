@@ -149,7 +149,7 @@ local function updatePlayTime()
     playTimeLabel.Text = string.format("⏳ Playtime: %02d:%02d:%02d", hours, minutes, seconds)
 end
 spawn(function()
-    while wait(10) do  
+    while wait(1) do  
         updatePlayTime()
 		print("✅ [ STATUS ] Updade Play Time Success ")
     end
@@ -180,7 +180,7 @@ local function updateStatsAndRace()
     raceCheckLabel.Text = string.format("%s Race: %s", EmojiLib:getEmoji("rocket"), tostring(race))
 end
 spawn(function()
-    while wait(10) do  -- Update every 1 second
+    while wait(1) do  -- Update every 1 second
         updateStatsAndRace()
 		print("✅ [ STATUS ] Updade Stats And Race Success ")
     end
@@ -205,7 +205,7 @@ local function updateMoonStatus()
 end
 
 spawn(function()
-    while wait(10) do  -- Update every 1 second
+    while wait(1) do  -- Update every 1 second
         updateMoonStatus()
 		print("✅ [ STATUS ] Updade Moon Success ")
     end

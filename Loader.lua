@@ -5,6 +5,7 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
 local Teams = game:GetService("Teams")
+local MarketplaceService = game:GetService("MarketplaceService")
 function Notify(Des, Time, title)
 	Fluent:Notify({
 		Title= title or "Sinon Notify",
@@ -169,23 +170,48 @@ local function formatNumber(number)
 end
 
 local function updateStatsAndRace()
-    local level = LocalPlayer:WaitForChild("Data"):WaitForChild("Level").Value
-    local beli = LocalPlayer:WaitForChild("Data"):WaitForChild("Beli").Value
-    local fragments = LocalPlayer:WaitForChild("Data"):WaitForChild("Fragments").Value
-    local race = LocalPlayer:WaitForChild("Data"):WaitForChild("Race").Value
+    local data = LocalPlayer:WaitForChild("Data")
+    local level = data:WaitForChild("Level").Value
+    local beli = data:WaitForChild("Beli").Value
+    local fragments = data:WaitForChild("Fragments").Value
+    local race = data:WaitForChild("Race").Value
 
-    -- Update the stats and Race with emojis, using the formatNumber function
-    statsCheckLabel.Text = string.format("%s Level: %d \n| 💰 Beli: %s | 💎 Fragments: %s|", 
-        EmojiLib:getEmoji("star"), level, formatNumber(beli), formatNumber(fragments))
-    raceCheckLabel.Text = string.format("%s Race: %s", EmojiLib:getEmoji("rocket"), tostring(race))
+    -- Cập nhật stats
+    statsCheckLabel.Text = string.format(
+        "Level: %d \n| 💰 Beli: %s | 💎 Fragments: %s |", 
+        level, 
+        formatNumber(beli), 
+        formatNumber(fragments)
+    )
+
+    -- Lấy thông tin game từ Marketplace (GameName)
+    local success, gameInfo = pcall(function()
+        return MarketplaceService:GetProductInfo(game.PlaceId)
+    end)
+
+    if success and gameInfo then
+        local GameName = gameInfo.Name or "Unknown Game" -- Nếu GameName là nil, dùng "Unknown Game"
+        local PlaceId = game.PlaceId -- Sử dụng game.PlaceId để lấy GameId
+
+        -- Cập nhật thông tin game và race
+        raceCheckLabel.Text = string.format(
+            "Game: %s \nID: %d | Race: %s",  
+            GameName, 
+            PlaceId,  -- Dùng game.PlaceId ở đây
+            race
+        )
+    else
+        raceCheckLabel.Text = "Game info not available." -- Thông báo nếu không lấy được thông tin game
+    end
 end
+
+-- Cập nhật mỗi 1 giây
 spawn(function()
-    while wait(1) do  -- Update every 1 second
+    while wait(1) do
         updateStatsAndRace()
-		print("✅ [ STATUS ] Updade Stats And Race Success ")
+        print("✅ [ STATUS ] Update Stats and Race Success")
     end
 end)
-
 -- Update Moon Status Function
 local function updateMoonStatus()
     local moonTextureId = game:GetService("Lighting").Sky.MoonTextureId
@@ -273,4 +299,3 @@ toggleButton.MouseButton1Click:Connect(function()
     isVisible = not isVisible  -- Toggle visibility
     screenGui.Enabled = isVisible  -- Show/hide the ScreenGui (FPS and time display)
 end)
-

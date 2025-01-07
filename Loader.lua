@@ -1,10 +1,17 @@
 local EmojiLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/NoraTaiSen/Screen/refs/heads/main/sinonlib.lua"))()
-
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
 local Teams = game:GetService("Teams")
+function Notify(Des, Time, title)
+	Fluent:Notify({
+		Title= title or "Sinon Notify",
+		Content = Des,
+		Duration = Time or 5
+	})
+end
 
 -- Wait for the game to fully load and character to be added
 if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
@@ -22,6 +29,9 @@ end
 waitForTeamJoin()
 
 task.wait(5)
+Notify("Fully Loader Success ✅")
+print("🔄 [ LOADER ] Script Loader Success!")
+task.wait(2)
 local UserInputService = game:GetService("UserInputService")
 
 -- Create the main ScreenGui
@@ -139,8 +149,9 @@ local function updatePlayTime()
     playTimeLabel.Text = string.format("⏳ Playtime: %02d:%02d:%02d", hours, minutes, seconds)
 end
 spawn(function()
-    while wait(1) do  -- Update every 1 second
+    while wait(10) do  
         updatePlayTime()
+		print("✅ [ STATUS ] Updade Play Time Success ")
     end
 end)
 
@@ -169,8 +180,9 @@ local function updateStatsAndRace()
     raceCheckLabel.Text = string.format("%s Race: %s", EmojiLib:getEmoji("rocket"), tostring(race))
 end
 spawn(function()
-    while wait(1) do  -- Update every 1 second
+    while wait(10) do  -- Update every 1 second
         updateStatsAndRace()
+		print("✅ [ STATUS ] Updade Stats And Race Success ")
     end
 end)
 
@@ -193,8 +205,9 @@ local function updateMoonStatus()
 end
 
 spawn(function()
-    while wait(1) do  -- Update every 1 second
+    while wait(10) do  -- Update every 1 second
         updateMoonStatus()
+		print("✅ [ STATUS ] Updade Moon Success ")
     end
 end)
 
@@ -260,5 +273,4 @@ toggleButton.MouseButton1Click:Connect(function()
     isVisible = not isVisible  -- Toggle visibility
     screenGui.Enabled = isVisible  -- Show/hide the ScreenGui (FPS and time display)
 end)
-
 
